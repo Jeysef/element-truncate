@@ -49,7 +49,7 @@ function App() {
         <ResizableHandle withHandle />
         <ResizablePanel />
       </ResizablePanelGroup>
-      <h2>With clickable handle</h2>
+      <h2>With clickable indicator</h2>
       <ResizablePanelGroup direction="horizontal" >
         <ResizablePanel
           className="rounded-lg border p-4"
