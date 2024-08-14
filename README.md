@@ -21,7 +21,7 @@ This alows for use in SSG components and for better performance and UX on web.
 
 3. leveraging browser
   After some more thinking, I came up with a better wersion of the previous solution.
-  "If I can let the browser do the wrapping, might as well do the indicators". So I came up with the idea to append the remaining elements to each element as such:
+  "If I can let the browser do the wrapping, might as well do the indicators". So I came up with the idea to append the remaining indicator to each element as such:
 
     let's imagine we have 5 elements with 3 shown
 
