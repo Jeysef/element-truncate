@@ -1,50 +1,38 @@
-# React + TypeScript + Vite
+# Element truncate
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+this repository explores the possibility of truncating elements with only pure CSS.
 
-Currently, two official plugins are available:
+This alows for use in SSG components and for better performance and UX on web.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Progress
 
-## Expanding the ESLint configuration
+1. Calculating elements truncation using JS
+  My first instinct to create such truncator was to use JS, measure container, each element and then calculate visible and hidden elements.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+    #### flaws: 
+    when using framework like Next.js the webpage is loaded immediatelly, but the truncator either flashed all the elements at start or was hidden until calculation finishes.
+    Also cannot be used on SSG pages.
 
-- Configure the top-level `parserOptions` property like this:
+2. calculating only the hidden elements, letting browser wrap
+  As I was dissatisfied with my previous solution I thought about leveraging CSS flex to do the wrapping part and measure container and each element to calculate remaining element.
+  
+    #### flaws:
+    Although the elements loaded immediatelly, there still was some flashing of remaining indicators which was still a problem.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+3. leveraging browser
+  After some more thinking, I came up with a better wersion of the previous solution.
+  "If I can let the browser do the wrapping, might as well do the indicators". So I came up with the idea to append the remaining elements to each element as such:
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+    let's imagine we have 5 elements with 3 shown
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+   `
+  (el1) +4 | (el2) +3 | (el3) +2
+  ` 
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+    This would then reintroduce a problem with showing too many indicators, so to mitigate this problem, I shifted every element except first to left with negative margin.
+    This basically solved the very problem.
+
+    #### flaws: 
+      when the indicator is made clickable, for example with popup, the root for the popup is at the clicked indicator, but when screen is resized and elements wrapped with changed indicator, the popup will be still **based on the clicked indicator, not the current one**.
+
+You can see my last soulution in `src` folder.
